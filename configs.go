@@ -321,6 +321,67 @@ func (edit BaseEdit) params() (Params, error) {
 	return params, err
 }
 
+type EmojiString string
+
+const (
+	EmojiType              EmojiString = "emoji"
+	ReactionTypeHeart      string      = "❤️"
+	ReactionTypeThumbsUp   string      = ""
+	ReactionTypeThumbsDown string      = ""
+	ReactionTypeFlame      string      = "🔥"
+	ReactionTypeLoveFace   string      = "🥰"
+	ReactionTypeClap       string      = "👏"
+	ReactionTypeTeeth      string      = "😁"
+	ReactionTypeThink      string      = "🤔"
+	ReactionTypeMindBlown  string      = "🤯"
+	ReactionTypeMad        string      = "🤬"
+	ReactionTypeTear       string      = "😢"
+	ReactionTypeParty      string      = "🎉"
+	ReactionTypeStarEyes   string      = "👀"
+	ReactionTypeHeartEyes  string      = "🤩"
+	ReactionTypeVomit      string      = "🤮"
+	ReactionTypePoop       string      = "💩"
+	ReactionTypeThanks     string      = "🙏"
+	ReactionTypeOk         string      = "👌"
+	ReactionTypeDove       string      = "🕊"
+)
+
+/*
+"🤡", "🥱", "🥴", "😍", "🐳", "❤‍🔥", "🌚", "🌭", "💯", "🤣", "⚡", "🍌", "🏆", "💔", "🤨", "😐", "🍓", "🍾", "💋", "🖕", "😈", "😴", "😭", "🤓", "👻", "👨‍💻", "👀", "🎃", "🙈", "😇", "😨", "🤝", "✍", "🤗", "🫡", "🎅", "🎄", "☃", "💅", "🤪", "🗿", "🆒", "💘", "🙉", "🦄", "😘", "💊", "🙊", "😎", "👾", "🤷‍♂", "🤷", "🤷‍♀", "😡"
+*/
+type ReactionType struct {
+	// ReactionTypeEmoji
+	Type  string `json:"type"` // Always "emoji"
+	Emoji string `json:"emoji"`
+}
+
+type ReactionTypeEmoji struct {
+	Type  string `json:"type"` // Always "emoji"
+	Emoji string `json:"emoji"`
+}
+
+type SetMessageReactionConfig struct {
+	// ChannelUsername string
+	ChatID    int64          // Required
+	MessageID int            // Required
+	Reactions []ReactionType // Optional
+	IsBig     bool           // Optional
+}
+
+func (SetMessageReactionConfig) method() string {
+	return "setMessageReaction"
+}
+
+func (config SetMessageReactionConfig) params() (Params, error) {
+	params := make(Params)
+	// params.AddFirstValid("chat_id", config.ChatID, config.ChannelUsername)
+	params.AddNonZero64("chat_id", config.ChatID)
+	params.AddNonZero("message_id", config.MessageID)
+	params.AddBool("is_big", config.IsBig)
+	err := params.AddInterface("reaction", config.Reactions)
+	return params, err
+}
+
 // MessageConfig contains information about a SendMessage request.
 type MessageConfig struct {
 	BaseChat
